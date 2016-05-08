@@ -2,6 +2,7 @@ From https://www.schneier.com/cryptography/solitaire/
 
 ## Todo
 Rename project?
+Use unicode representations of cards?
 
 ## Implementation notes
 Deck has state, should be an object
