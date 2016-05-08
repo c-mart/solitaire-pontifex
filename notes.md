@@ -1,8 +1,11 @@
 From https://www.schneier.com/cryptography/solitaire/
 
 ## Todo
-Rename project?
-Use unicode representations of cards?
+- Build verbose output
+- Refactor joker rotation to use a circular data structure rather than hard-coding special cases
+- Use unicode representations of cards?
+- Every public function checks valid input? Or make functions not public?
+- Key phrase should 
 
 ## Implementation notes
 Deck has state, should be an object
@@ -12,8 +15,8 @@ Internally represent deck as numbers, but can print (output) as cards
 
 Instantiate new deck, pass either numbers or cards
 
-
 Cipher is keystream-based - this is a stream cipher
+
 - Keystream is generated to match length of plaintext, keystream is letters or numbers representing same
 - A keystream can be re-generated from a particular arrangement of a deck of cards
 - Plaintext is added to keystream modulo 26 to encrypt
@@ -29,6 +32,7 @@ Create new key by shuffling?
 Assign numerical value for each card: 1 (Ace) through 13 (King)
 For steps 4 and 5 below, both jokers are worth 53
 Bridge order of suits:
+
 - Clubs (face value)
 - Diamonds (+13)
 - Hearts (+26)
@@ -39,10 +43,12 @@ Bridge order of suits:
 Jokers must be distinguishable from each other (designate them A and B)
 
 Deck is circular array: first card follows the last card. So, moving a card past the end of the deck moves it back to the beginning.
+IS the bottom the top?
 
 Initialize deck to generate known key by arranging cards in key configuration
 
 To produce one character of keystream:
+
 1. Find A joker, advance it one position (move to card beneath it)
 2. Find B joker, advance it two positions (move forward two cards)
 3. Triple cut

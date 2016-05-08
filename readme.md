@@ -1,4 +1,8 @@
-This readme file assumes familiarity with Bruce Schnier's [Solitaire cipher](https://www.schneier.com/cryptography/solitaire/). Go learn about Solitaire there, then 
+Implementation of Solitaire cipher by Bruce Schnier, a.k.a. Pontifex cipher from Neal Stephenson's Cryptonomicon,
+https://www.schneier.com/cryptography/solitaire/
+https://en.wikipedia.org/wiki/Solitaire_%28cipher%29
+
+This readme file assumes familiarity with Bruce Schnier's [Solitaire cipher](https://www.schneier.com/cryptography/solitaire/). If you haven't already, go learn about Solitaire and then come back here.
 
 ## Key representation
 Key can be represented as a list of numeric card values (1 to 54 inclusive), or as a list of human-friendly string values. These string values contain two characters:
