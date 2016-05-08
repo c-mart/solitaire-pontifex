@@ -45,7 +45,8 @@ class Deck(object):
 
     @staticmethod
     def _validate_key(self, key):
-        """Check that user input key is valid, then return key represented as numbers, converting it if necessary"""
+        """Check that user input key is valid, then return key represented as numbers, converting it if necessary
+        We internally work with the key numerically"""
         if type(key[0]) is int:
             assert sorted(key) == sorted(self.reference_numeric_key()), \
                 "Numeric representation of key must be a list of all integers from 1 to 54 inclusive (in any order)"
@@ -64,15 +65,40 @@ class Deck(object):
             return "Deck with state {0}".format(self.cards)
 
     def _card_nums_to_strings(self, cards):
-        pass
+        """Converts list of numeric representations of cards to list of string representations of cards"""
+        n2s_lookup = dict()
+        for key, value in zip(self.reference_numeric_key(), self.reference_string_key()):
+            n2s_lookup[key] = value
+        return [n2s_lookup[card] for card in cards]
 
     def _card_strings_to_nums(self, cards):
-        # Use two reference keys to build lookup dictionary
-        pass
+        """Converts list of string representations of cards to list of numeric representations of cards"""
+        s2n_lookup = dict()
+        for key, value in zip(self.reference_string_key(), self.reference_numeric_key()):
+            s2n_lookup[key] = value
+        return [s2n_lookup[card] for card in cards]
 
     def generate_keystream(self, length):
-        """Uses the Solitaire algorithm, generates output keystream (numbers 1-54) of given length"""
-        pass
+        """Implements the Solitaire algorithm, generates output keystream (numbers 1-54 inclusive) of given length"""
+        for i in range(length):
+            # Locate joker A and advance it one position
+            ja_loc = self.cards.index(53)
+            if ja_loc == 53:  # If joker is on the bottom of the deck, move it to the top
+                self.cards = [53] + self.cards[:53]
+            else:
+                self.cards = self.cards[:ja_loc] + self.cards[ja_loc+1] + [53] + self.cards[ja_loc+2:]
+            # TODO this is going to be hard to generalize for second joker. Refactor to move cards another way.
+
+
+def letter_to_number_mod26():
+    # TODO
+    pass
+
+
+def number_mod26_to_letter():
+    # TODO
+    pass
+
 
 def encrypt(deck, plaintext):
     """Uses a given deck to encrypt a given plaintext"""
@@ -82,5 +108,3 @@ def encrypt(deck, plaintext):
 def decrypt(deck, ciphertext):
     """Uses a given deck to decrypt a given ciphertext"""
     pass
-
-print(Deck.reference_string_key())

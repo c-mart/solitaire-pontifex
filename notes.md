@@ -59,7 +59,7 @@ To produce one character of keystream:
   - Card *after* the pth card is the key output if it is not a joker, record its value
   - If key output is a joker, disregard and start over from step 1
 
-Continue repeating these steps to generate a keystream as long as the plaintext/ciphertext
+Continue repeating these steps to generate a keystream the same length as the plaintext/ciphertext
 
 ## Keying the Deck
 A key is a deck with cards in a particular order
