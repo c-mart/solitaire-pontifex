@@ -12,6 +12,74 @@ def number_mod26_to_letter():
     # TODO
     pass
 
+# Functions used to generate keystream and derive starting deck from a passphrase.
+
+
+def advance_joker_a(deck):
+    """Given a deck (numeric representation), locate joker A and advance it one position, return new deck"""
+    # Locate joker A and advance it one position
+    ja_loc = deck.index(53)
+    if ja_loc == 53:  # If joker A is on the bottom of the deck, move it to one card below the top
+        return [deck[0]] + [53] + deck[1:53]
+    else:
+        return deck[:ja_loc] + [deck[ja_loc + 1]] + [53] + deck[ja_loc + 2:]
+
+
+def advance_joker_b(deck):
+    """Given a deck (numeric representation), locate joker B and advance it two positions, return new deck"""
+    jb_loc = deck.index(54)
+    if jb_loc == 53:  # If joker B is on the bottom of the deck, move it to two positions below the top
+        return deck[0:2] + [54] + deck[2:53]
+    if jb_loc == 52:  # If joker is second from bottom of the deck, move it to one position below the top
+        return [deck[0]] + [54] + deck[1:52] + [deck[53]]
+    else:
+        return deck[:jb_loc] + deck[jb_loc + 1:jb_loc + 3] + [54] + deck[jb_loc + 3:]
+
+
+def triple_cut(deck):
+    """Given a deck, perform a triple cut, return new deck.
+    A triple cut swaps the cards before the first-appearing joker with the cards after the last-appearing joker.
+    The *relative* positions of the two jokers and cards between them do not change.
+    """
+    first_j_loc, second_j_loc = sorted([deck.index(53), deck.index(54)])
+    return deck[second_j_loc + 1:] + deck[first_j_loc:second_j_loc + 1] + deck[:first_j_loc]
+
+
+def count_cut(deck):
+    """Given a deck, perform a count cut, return new deck. Count cut steps:
+    1. Observe numeric value (n) of bottom card. Per specification, both jokers have value 53 (both treated as joker A)
+    2. Cut from after the nth (1-indexed) card up to (but not including) the last card
+    3. Move the cut section to the top of the deck
+    """
+    bottom_card_val = deck[53]
+    # Per specification, both jokers have value 53 in this step, so if we find Joker B we treat it as Joker A
+    if bottom_card_val == 54:
+        bottom_card_val = 53
+    # 'Cheat' by using the 1-indexed card value to refer to position following zero-indexed list location
+    return deck[bottom_card_val:53] + deck[:bottom_card_val] + [deck[53]]
+
+
+class JokerException(Exception):
+    """Used when we get a joker in our output keystream value"""
+    pass
+
+
+def read_output_keystream_value(deck):
+    """Given a deck, returns output value for keystream or raises ValueError. To determine output:
+    1. Observe numeric value (n) of top card. Per specification, both jokers have value 53 (both treated as joker A)
+    2. Return numeric value (p) of card after nth (1-indexed) card, unless it is a joker, raise JokerException
+    """
+    top_card_val = deck[0]
+    if top_card_val == 54:
+        top_card_val = 53
+    # 'Cheat' by using the 1-indexed card value to refer to position following zero-indexed list location
+    output_card_val = deck[top_card_val]
+    if output_card_val in (53, 54):
+        raise JokerException
+    else:
+        return output_card_val
+
+
 
 def reference_numeric_key():
     """Returns ordered reference list of cards represented as numbers from 1-54 inclusive"""
@@ -42,13 +110,13 @@ def key_from_passphrase(passphrase):
 
 class Deck(object):
     """Deck of cards used to generate keystream"""
-    def __init__(self, key=None):
+    def __init__(self, deck=None, show_as_strs = False):
         """Key is list of cards represented numerically (1 to 54 inclusive) or with strings (as described in readme.md)
         If key is not provided, deck will be generated in random order"""
-        if key:
-            self.cards = self._validate_key(self, key)
+        if deck:
+            self.deck = self._validate_key(self, deck)
         else:
-            self.cards = random_key()
+            self.deck = random_key()
 
     @staticmethod
     def _validate_key(self, key):
@@ -67,9 +135,9 @@ class Deck(object):
 
     def __repr__(self):
         if self.show_as_strs:
-            return "Deck with state {0}".format(self._card_nums_to_strings(self.cards))
+            return "Deck with state {0}".format(self._card_nums_to_strings(self.deck))
         else:
-            return "Deck with state {0}".format(self.cards)
+            return "Deck with state {0}".format(self.deck)
 
     @staticmethod
     def _card_nums_to_strings(cards):
@@ -91,49 +159,17 @@ class Deck(object):
         """Implements the Solitaire algorithm, generates output keystream (numbers 1-54 inclusive) of given length"""
         keystream = []
         for i in range(length):
-            # Iterate through algorithm until it generates an output that is not a joker
+            # Iterate through algorithm until we get an output that is not a joker
             while True:
-                # Locate joker A and advance it one position
-                ja_loc = self.cards.index(53)
-                if ja_loc == 53:  # If joker A is on the bottom of the deck, move it to one card below the top
-                    self.cards = [self.cards[0]] + [53] + self.cards[1:53]
-                else:
-                    self.cards = self.cards[:ja_loc] + [self.cards[ja_loc+1]] + [53] + self.cards[ja_loc+2:]
-
-                # Locate joker B and advance it two positions
-                jb_loc = self.cards.index(54)
-                if jb_loc == 53:  # If joker B is on the bottom of the deck, move it to two positions below the top
-                    self.cards = self.cards[0:2] + [54] + self.cards[2:53]
-                if jb_loc == 52:  # If joker is second from bottom of the deck, move it to one position below the top
-                    self.cards = [self.cards[0]] + [54] + self.cards[1:52] + [self.cards[53]]
-                else:
-                    self.cards = self.cards[:jb_loc] + self.cards[jb_loc+1:jb_loc+3] + [54] + self.cards[jb_loc+3:]
-
-                # Perform triple cut
-                first_j_loc, second_j_loc = sorted([self.cards.index(53), self.cards.index(54)])
-                self.cards = self.cards[second_j_loc+1:] + self.cards[first_j_loc:second_j_loc+1] + self.cards[:first_j_loc]
-
-                # Perform count cut
-                bottom_card_val = self.cards[53]
-                # Per specification, both jokers count as 53 in this step, so if we find Joker B we treat it as Joker A
-                if bottom_card_val == 54:
-                    bottom_card_val = 53
-                # 'Cheat' by using the 1-indexed card value to refer to position following zero-indexed list location
-                self.cards = self.cards[bottom_card_val:53] + self.cards[:bottom_card_val] + [self.cards[53]]
-
-                # Read output character
-                top_card_val = self.cards[0]
-                # Again, this step treats either joker as value 53
-                if top_card_val == 54:
-                    top_card_val = 53
-                # Same 'cheat' as above because output card follows the nth card, where n is value of top card
-                output_card_val = self.cards[top_card_val]
-                # If output card is not a joker, add its value to keystream
-                if output_card_val not in (53, 54):
-                    keystream.append(output_card_val)
+                self.deck = advance_joker_a(self.deck)
+                self.deck = advance_joker_b(self.deck)
+                self.deck = triple_cut(self.deck)
+                self.deck = count_cut(self.deck)
+                try:
+                    keystream.append(read_output_keystream_value(self.deck))
                     break
-                # Else, output card is a joker, start over again
-                else:
+                # If output card is a joker, do not add to keystream and start over again
+                except JokerException:
                     continue
         return keystream
 
