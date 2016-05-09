@@ -4,6 +4,8 @@ https://en.wikipedia.org/wiki/Solitaire_%28cipher%29
 
 This readme file assumes familiarity with Bruce Schnier's [Solitaire cipher](https://www.schneier.com/cryptography/solitaire/). If you haven't already, go learn about Solitaire and then come back here.
 
+The bottom IS the top so we need to swap one further.
+
 ## Key representation
 Key can be represented as a list of numeric card values (1 to 54 inclusive), or as a list of human-friendly string values. These string values contain two characters:
 1. First letter of suit of card (e.g. C for clubs)
