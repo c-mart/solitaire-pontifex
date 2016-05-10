@@ -1,19 +1,47 @@
 import random
+import string
+
 
 # Helper functions
 
+def reference_numeric_key():
+    """Returns ordered reference list of cards represented as numbers from 1-54 inclusive"""
+    return [x for x in range(1, 55)]
 
-def letter_to_number_mod26():
-    # TODO
-    pass
+
+def reference_string_key():
+    """Returns ordered reference list of cards represented as strings per readme.md"""
+    string_key = list()
+    for suit in ['C', 'D', 'H', 'S']:
+        for rank in ['A'] + [str(x) for x in range(2, 11)] + ['J', 'Q', 'K']:
+            string_key.append(suit + rank)
+    string_key += ['JA', 'JB']  # Two jokers
+    return string_key
 
 
-def number_mod26_to_letter():
-    # TODO
-    pass
+def random_key():
+    """Generates a random key for use - a shuffled deck, if you will"""
+    key = reference_numeric_key()
+    random.shuffle(key)
+    return key
+
+
+def letter_to_number(letter):
+    """Given a single letter, return its 1-indexed number in the alphabet."""
+    assert type(letter) == str, "Letter must be represented as a string"
+    assert letter in string.ascii_letters, "Must pass a valid letter"
+    assert len(letter) == 1, "Must pass a single letter"
+    return string.ascii_uppercase.index(letter.upper()) + 1
+
+
+def number_to_letter(number):
+    """Given number (an integer), return its associated 1-indexed letter.
+    If number is greater than 26, return 1-indexed letter associated with number modulo 26."""
+    assert type(number) == int, "Number must be an integer"
+    return string.ascii_uppercase[(number - 1) % 26]
+
 
 # Functions used to generate keystream and derive starting deck from a passphrase.
-
 
 def advance_joker_a(deck):
     """Given a deck (numeric representation), locate joker A and advance it one position, return new deck"""
@@ -59,6 +87,16 @@ def count_cut(deck):
     return deck[bottom_card_val:53] + deck[:bottom_card_val] + [deck[53]]
 
 
+def count_cut_from_letter(deck, letter):
+    """Given a deck, perform a count cut as defined above, with one modification:
+    Use 1-indexed numeric value of letter rather than numeric value of bottom card.
+    Return new deck.
+    """
+    cut_pos = letter_to_number(letter)
+    # 'Cheat' by using the 1-indexed cut position to refer to position following zero-indexed list location
+    return deck[cut_pos:53] + deck[:cut_pos] + [deck[53]]
+
+
 class JokerException(Exception):
     """Used when we get a joker in our output keystream value"""
     pass
@@ -80,32 +118,18 @@ def read_output_keystream_value(deck):
         return output_card_val
 
 
-
-def reference_numeric_key():
-    """Returns ordered reference list of cards represented as numbers from 1-54 inclusive"""
-    return [x for x in range(1, 55)]
-
-
-def reference_string_key():
-    """Returns ordered reference list of cards represented as strings per readme.md"""
-    string_key = list()
-    for suit in ['C', 'D', 'H', 'S']:
-        for rank in ['A'] + [str(x) for x in range(2, 11)] + ['J', 'Q', 'K']:
-            string_key.append(suit + rank)
-    string_key += ['JA', 'JB']  # Two jokers
-    return string_key
-
-
-def random_key():
-    """Generates a random key for use - a shuffled deck, if you will"""
-    key = reference_numeric_key()
-    random.shuffle(key)
-    return key
-
-
 def key_from_passphrase(passphrase):
-    """Generates a key from a passphrase using keying method 3 in specification"""
-    pass
+    """Generate a key deck from a passphrase of entirely letters using keying method 3 in specification"""
+    assert type(passphrase) == str, "Passphrase must be a string"
+    assert all([letter in string.ascii_letters for letter in passphrase]), "Passphrase must consist entirely of letters"
+    key_deck = reference_numeric_key()
+    for letter in passphrase:
+        key_deck = advance_joker_a(key_deck)
+        key_deck = advance_joker_b(key_deck)
+        key_deck = triple_cut(key_deck)
+        key_deck = count_cut(key_deck)
+        key_deck = count_cut_from_letter(key_deck, letter)
+    return key_deck
 
 
 class Deck(object):
@@ -117,6 +141,7 @@ class Deck(object):
             self.deck = self._validate_key(self, deck)
         else:
             self.deck = random_key()
+        self.show_as_strs = show_as_strs
 
     @staticmethod
     def _validate_key(self, key):
