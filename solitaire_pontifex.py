@@ -28,8 +28,7 @@ def random_key():
 
 def letter_to_number(letter):
     """Given a single letter, return its 1-indexed number in the alphabet."""
-    assert type(letter) == str, "Letter must be represented as a string"
-    assert letter in string.ascii_letters, "Must pass a valid letter"
+    validate_letter_str(letter)
     assert len(letter) == 1, "Must pass a single letter"
     return string.ascii_uppercase.index(letter.upper()) + 1
 
@@ -120,8 +119,7 @@ def read_output_keystream_value(deck):
 
 def key_from_passphrase(passphrase):
     """Generate a key deck from a passphrase of entirely letters using keying method 3 in specification"""
-    assert type(passphrase) == str, "Passphrase must be a string"
-    assert all([letter in string.ascii_letters for letter in passphrase]), "Passphrase must consist entirely of letters"
+    validate_letter_str(passphrase)
     key_deck = reference_numeric_key()
     for letter in passphrase:
         key_deck = advance_joker_a(key_deck)
@@ -199,13 +197,43 @@ class Deck(object):
         return keystream
 
 
+def validate_letter_str(letter_str):
+    """Confirms that a plaintext matches the specification accepted by the algorithm"""
+    assert type(letter_str) == str, "input must be a string"
+    assert all([letter in string.ascii_letters for letter in letter_str]), "input must consist entirely of letters"
+
+
+def pad_plaintext(plaintext):
+    """Using the letter X, pads plaintext out to a multiple of five characters"""
+    validate_letter_str(plaintext)
+    if len(plaintext) % 5 == 0:
+        pad_length = 0
+    else:
+        pad_length = 5 - len(plaintext) % 5
+    return plaintext + "X" * pad_length
+
+
 def encrypt(deck, plaintext):
-    """Uses a given deck to encrypt a given plaintext"""
-    # TODO
-    pass
+    """Uses a given deck to encrypt a given plaintext, return ciphertext"""
+    assert isinstance(deck, Deck), "deck must be a Deck object"
+    validate_letter_str(plaintext)
+    padded_plaintext = pad_plaintext(plaintext)
+    keystream = deck.generate_keystream(len(padded_plaintext))
+    ciphertext = ""
+    for pt_letter, keystream_val in zip(padded_plaintext, keystream):
+        pt_number = letter_to_number(pt_letter)
+        ct_char = number_to_letter(pt_number + keystream_val)
+        ciphertext += ct_char
+    return ciphertext
 
 
 def decrypt(deck, ciphertext):
-    """Uses a given deck to decrypt a given ciphertext"""
-    # TODO
-    pass
+    assert isinstance(deck, Deck), "deck must be a Deck object"
+    validate_letter_str(ciphertext)
+    keystream = deck.generate_keystream(len(ciphertext))
+    plaintext = ""
+    for ct_letter, keystream_val in zip(ciphertext, keystream):
+        ct_number = letter_to_number(ct_letter)
+        pt_char = number_to_letter(ct_number - keystream_val)
+        plaintext += pt_char
+    return plaintext
