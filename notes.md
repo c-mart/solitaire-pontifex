@@ -1,11 +1,10 @@
 From https://www.schneier.com/cryptography/solitaire/
 
 ## Todo
-- Build verbose output
-- Refactor joker rotation to use a circular data structure rather than hard-coding special cases
+- Tie it all together, write a nice readme
+- Build verbose output?
 - Use unicode representations of cards? https://en.wikipedia.org/wiki/Standard_52-card_deck#Text
-- Every public function checks valid input? Or make functions not public?
-- Accept key phrase
+- Every function checks valid input? Or make functions not public?
 
 ## Implementation notes
 Deck has state, should be an object
