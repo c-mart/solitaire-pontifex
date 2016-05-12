@@ -9,13 +9,14 @@ Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptograph
     >>> my_key = solitaire.get_key_from_passphrase("MANZANITA")
     >>> print(key_helpers.format_key(my_key, 'u'))
     ['🃘', '🃙', '🃚', '🃛', '🃝', '🃞', '🃁', '🃑', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃕', '🃏', '🂸', '🂢', '🂣', '🂦', '🂧', '🃔', '🃖', '🃗', '🃟', '🃍', '🃎', '🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🃒', '🂹', '🂺', '🂻', '🂽', '🂾', '🂡', '🃂', '🂤', '🂥', '🃃', '🂨', '🂩', '🂪', '🂫', '🂭', '🃓', '🂷', '🂮']
-    
+    >>>
     >>> ciphertext = solitaire.encrypt(my_key, "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG")
     >>> print(ciphertext)
     CCOUZQMDZCLFCJNTLHQUBDHRXHITYODDRFY
-    
-    >>> solitaire.decrypt(my_key, ciphertext)
-    'THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG'
+    >>>
+    >>> plaintext = solitaire.decrypt(my_key, ciphertext)
+    >>> print(plaintext)
+    THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG
 
 
 ## Supported Key Representations
