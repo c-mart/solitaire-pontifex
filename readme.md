@@ -6,10 +6,17 @@ Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptograph
 
 ## Basic Usage
     >>> import solitaire, key_helpers
+    >>>
+    >>> # Generate a key and render it as numeric, string, or unicode  
     >>> my_key = solitaire.get_key_from_passphrase("MANZANITA")
+    >>> print(my_key)
+    [8, 9, 10, 11, 12, 13, 14, 1, 17, 18, 19, 20, 21, 22, 23, 24, 5, 53, 34, 41, 42, 45, 46, 4, 6, 7, 54, 25, 26, 27, 28, 29, 30, 31, 32, 2, 35, 36, 37, 38, 39, 40, 15, 43, 44, 16, 47, 48, 49, 50, 51, 3, 33, 52]
+    >>> print(key_helpers.format_key(my_key, 's'))
+    ['C8', 'C9', 'C10', 'CJ', 'CQ', 'CK', 'DA', 'CA', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'DJ', 'C5', 'JA', 'H8', 'S2', 'S3', 'S6', 'S7', 'C4', 'C6', 'C7', 'JB', 'DQ', 'DK', 'HA', 'H2', 'H3', 'H4', 'H5', 'H6', 'C2', 'H9', 'H10', 'HJ', 'HQ', 'HK', 'SA', 'D2', 'S4', 'S5', 'D3', 'S8', 'S9', 'S10', 'SJ', 'SQ', 'C3', 'H7', 'SK']
     >>> print(key_helpers.format_key(my_key, 'u'))
     ['🃘', '🃙', '🃚', '🃛', '🃝', '🃞', '🃁', '🃑', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃕', '🃏', '🂸', '🂢', '🂣', '🂦', '🂧', '🃔', '🃖', '🃗', '🃟', '🃍', '🃎', '🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🃒', '🂹', '🂺', '🂻', '🂽', '🂾', '🂡', '🃂', '🂤', '🂥', '🃃', '🂨', '🂩', '🂪', '🂫', '🂭', '🃓', '🂷', '🂮']
     >>>
+    >>> # Encrypt and decrypt text
     >>> ciphertext = solitaire.encrypt(my_key, "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG")
     >>> print(ciphertext)
     CCOUZQMDZCLFCJNTLHQUBDHRXHITYODDRFY
