@@ -1,24 +1,47 @@
-Implementation of Solitaire cipher by Bruce Schnier, a.k.a. Pontifex cipher from Neal Stephenson's Cryptonomicon,
-https://www.schneier.com/cryptography/solitaire/
-https://en.wikipedia.org/wiki/Solitaire_%28cipher%29
+Implementation of [Solitaire](https://www.schneier.com/cryptography/solitaire/) encryption algorithm by Bruce Schnier, a.k.a. Pontifex cipher from Neal Stephenson's [Cryptonomicon](https://en.wikipedia.org/wiki/Cryptonomicon).
 
-This readme file assumes familiarity with Bruce Schnier's [Solitaire cipher](https://www.schneier.com/cryptography/solitaire/). If you haven't already, go learn about Solitaire and then come back here.
+Supports generation of keystream, encryption and decryption of messages, and various utility functions.
 
-The bottom IS the top so we need to swap one further.
+## Disclaimer
+Solitaire has known cryptographic weaknesses. I am not a cryptographer, and this implementation has not been reviewed by one. So, please don't use this for any truly sensitive information.
 
-## Key representation
-Key can be represented as a list of numeric card values (1 to 54 inclusive), or as a list of human-friendly string values. These string values contain two characters:
-1. First letter of suit of card (e.g. C for clubs)
-2. Rank of card (A for ace, number of numeric card, or first letter of face card e.g. Q for queen)
+## Basic Usage
+[DEMO HERE]
 
-Jokers are represented as "JA" or "JB".
+## Supported Key Representations
+A key is an ordered deck of cards represented as a list of 54 elements, which can be represented three different ways for computation or human-friendly output. The numeric representation is used internally for cryptographic operations, but we can also accept input or display output as either two-character strings or unicode playing card characters.
 
-### Example Key Representations
-Numeric:
-`[17, 6, 7, 28, 27, 24, 42, 43, 15, 3, 29, 20, 11, 1, 13, 49, 22, 14, 52, 53, 10, 34, 30, 51, 23, 32, 46, 48, 40, 44, 25, 54, 39, 4, 37, 45, 50, 12, 5, 8, 18, 31, 9, 35, 47, 19, 38, 36, 21, 2, 26, 33, 16, 41]`
+### Numeric
+As in Schnier's specification, each card is an integer from 1 to 54 inclusive.
+Within a suit, each card has a value between 1 (Ace) and 13 (King). Using the bridge ordering, each suit is offset by 13:
 
-String:
-`['H3', 'DK', 'S9', 'C10', 'C8', 'D6', 'C7', 'C6', 'S4', 'S3', 'D2', 'S2', 'SK', 'S7', 'CJ', 'JB', 'DA', 'D9', 'HA', 'CA', 'H7', 'HQ', 'D7', 'HJ', 'SQ', 'D4', 'C5', 'CK', 'D3', 'S10', 'S5', 'C2', 'H8', 'SA', 'S6', 'H6', 'H10', 'DJ', 'H5', 'JA', 'H4', 'CQ', 'DQ', 'S8', 'H2', 'C3', 'D10', 'D5', 'H9', 'C4', 'SJ', 'D8', 'HK', 'C9']`
+- Clubs (face value)
+- Diamonds (+13)
+- Hearts (+26)
+- Spades (+39)
 
-## Card unicode representation
-????
+Jokers A and B are 53 and 54 respectively.
+
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54]
+
+### String
+Each card is a short string: the first letter of suit, followed by the rank (number of numeric card or first letter of face card). Jokers A and B are 'JA' and 'JB' respectively.
+
+    ['CA', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'CJ', 'CQ', 'CK', 'DA', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'DJ', 'DQ', 'DK', 'HA', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'H10', 'HJ', 'HQ', 'HK', 'SA', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'SJ', 'SQ', 'SK', 'JA', 'JB']
+
+### Unicode
+Each card is a unicode playing card character as defined [here](http://www.unicode.org/charts/PDF/U1F0A0.pdf).
+
+    ['🃑', '🃒', '🃓', '🃔', '🃕', '🃖', '🃗', '🃘', '🃙', '🃚', '🃛', '🃝', '🃞', '🃁', '🃂', '🃃', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃍', '🃎', '🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🂷', '🂸', '🂹', '🂺', '🂻', '🂽', '🂾', '🂡', '🂢', '🂣', '🂤', '🂥', '🂦', '🂧', '🂨', '🂩', '🂪', '🂫', '🂭', '🂮', '🃏', '🃟']
+
+## Other
+"Key" and "deck" refer the same data structure, but have different meanings in different parts of the code.
+
+Internal functions that have a "deck" parameter expect it to be passed in numeric form.
+
+A deck uses the same data structure of a key, but is mutated while performing cryptographic operations in deck_ops.py.
+
+Functions that refer to a "deck" typically mutate the deck.
+Functions that refer to a "key" typically use the key as input but do not modify it.
+
+These 
