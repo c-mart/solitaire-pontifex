@@ -2,8 +2,7 @@ Implementation of [Solitaire](https://www.schneier.com/cryptography/solitaire/) 
 
 Supports generation of keystream, encryption and decryption of messages, and various utility functions.
 
-## Disclaimer
-Solitaire has known cryptographic weaknesses. I am not a cryptographer, and this implementation has not been reviewed by one. So, please don't use this for any truly sensitive information.
+Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptographer, and this implementation has not been reviewed by one. So, please don't use this for any truly sensitive information.
 
 ## Basic Usage
     >>> import solitaire, key_helpers
