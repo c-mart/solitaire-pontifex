@@ -1,13 +1,13 @@
 Implementation of [Solitaire](https://www.schneier.com/cryptography/solitaire/) encryption algorithm by Bruce Schnier, a.k.a. Pontifex cipher from Neal Stephenson's [Cryptonomicon](https://en.wikipedia.org/wiki/Cryptonomicon).
 
-Supports generation of keystream, encryption and decryption of messages, and various utility functions.
+Supports generation and human-friendly rendering of keystream, encryption and decryption of messages, and various utility functions.
 
 Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptographer, and this implementation has not been reviewed by one. So, please don't use this for any truly sensitive information.
 
 ## Basic Usage
     >>> import solitaire, key_helpers
     >>>
-    >>> # Generate a key and render it as numeric, string, or unicode  
+    >>> # Generate a key and render it as numeric, string, or unicode playing cards
     >>> my_key = solitaire.get_key_from_passphrase("MANZANITA")
     >>> print(my_key)
     [8, 9, 10, 11, 12, 13, 14, 1, 17, 18, 19, 20, 21, 22, 23, 24, 5, 53, 34, 41, 42, 45, 46, 4, 6, 7, 54, 25, 26, 27, 28, 29, 30, 31, 32, 2, 35, 36, 37, 38, 39, 40, 15, 43, 44, 16, 47, 48, 49, 50, 51, 3, 33, 52]

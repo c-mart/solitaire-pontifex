@@ -5,10 +5,9 @@ We can accept key in numeric, string, or unicode playing card format
 We should have:
 
 ## Todo
+- Verbose mode output
 - Ensure we are validating everything. Every function checks valid input? Or make functions not public?
 - Consider key stored as number by default, can print as string or unicode
-- Tie it all together, write a nice readme
-- Build verbose output for cryptographic operations
 - Use unicode representations of cards? https://en.wikipedia.org/wiki/Standard_52-card_deck#Text
 
 Crypto should handle numeric keys
