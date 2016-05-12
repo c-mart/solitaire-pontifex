@@ -6,7 +6,18 @@ Supports generation of keystream, encryption and decryption of messages, and var
 Solitaire has known cryptographic weaknesses. I am not a cryptographer, and this implementation has not been reviewed by one. So, please don't use this for any truly sensitive information.
 
 ## Basic Usage
-[DEMO HERE]
+    >>> import solitaire, key_helpers
+    >>> my_key = solitaire.get_key_from_passphrase("MANZANITA")
+    >>> print(key_helpers.format_key(my_key, 'u'))
+    ['🃘', '🃙', '🃚', '🃛', '🃝', '🃞', '🃁', '🃑', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃕', '🃏', '🂸', '🂢', '🂣', '🂦', '🂧', '🃔', '🃖', '🃗', '🃟', '🃍', '🃎', '🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🃒', '🂹', '🂺', '🂻', '🂽', '🂾', '🂡', '🃂', '🂤', '🂥', '🃃', '🂨', '🂩', '🂪', '🂫', '🂭', '🃓', '🂷', '🂮']
+    
+    >>> ciphertext = solitaire.encrypt(my_key, "THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG")
+    >>> print(ciphertext)
+    CCOUZQMDZCLFCJNTLHQUBDHRXHITYODDRFY
+    
+    >>> solitaire.decrypt(my_key, ciphertext)
+    'THEQUICKBROWNFOXJUMPSOVERTHELAZYDOG'
+
 
 ## Supported Key Representations
 A key is an ordered deck of cards represented as a list of 54 elements, which can be represented three different ways for computation or human-friendly output. The numeric representation is used internally for cryptographic operations, but we can also accept input or display output as either two-character strings or unicode playing card characters.
