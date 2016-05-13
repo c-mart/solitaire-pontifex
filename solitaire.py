@@ -1,3 +1,4 @@
+import collections
 import key_helpers
 import deck_ops
 import text_helpers
@@ -60,3 +61,38 @@ def decrypt(key, ciphertext):
         pt_char = text_helpers.number_to_letter(ct_number - keystream_val)
         plaintext += pt_char
     return plaintext
+
+
+class Key(collections.UserList):
+    """Object-oriented way to generate, display, and use a key."""
+    def __init__(self, key_deck=None, passphrase=None):
+        """Instantiate a new Key from one of the following:
+        - A passphrase, must consist of letters A through Z; uses Schnier's keying method 3
+        - A key_deck adhering to one of the supported representations in readme.md
+        - A random deck ordering, if neither passphrase nor key_deck is given
+        """
+        assert not all((passphrase, key_deck)), "Must provide either passphrase or key_deck, not both"
+        if passphrase:
+            self.key = get_key_from_passphrase(passphrase)
+        elif key_deck:
+            key_helpers.validate_key(key_deck)
+            self.key = key_helpers.format_key(key_deck)
+        else:
+            self.key = key_helpers.randomize_key(key_helpers.get_reference_key())
+
+        collections.UserList.__init__(self, self.key)
+
+    def __repr__(self):
+        return str(self.key)
+
+    def __str__(self):
+        return str(self.key)
+
+    def as_numeric(self):
+        return self.key
+
+    def as_string(self):
+        return key_helpers.format_key(self.key, 's')
+
+    def as_unicode(self):
+        return key_helpers.format_key(self.key, 'u')

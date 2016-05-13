@@ -2,9 +2,8 @@ From https://www.schneier.com/cryptography/solitaire/
 
 We can accept key in numeric, string, or unicode playing card format
 
-We should have:
-
 ## Todo
+- Test key class
 - Verbose mode output
 - Ensure we are validating everything. Every function checks valid input? Or make functions not public?
 - Consider key stored as number by default, can print as string or unicode

@@ -37,7 +37,7 @@ def get_reference_key_unicode():
 
 def randomize_key(key):
     """Returns a randomized (shuffled) copy of key"""
-    random.shuffle(key[:])
+    random.shuffle(key)
     return key
 
 
