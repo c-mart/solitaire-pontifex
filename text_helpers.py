@@ -1,7 +1,9 @@
 import string
 
+"""
+Helper functions for working with strings of plaintext and ciphertext
+"""
 
-# Helper functions for working with strings of plaintext and ciphertext
 
 def validate_letter_str(letter_str):
     """Confirms that a plaintext matches the specification accepted by the algorithm"""

@@ -17,21 +17,34 @@ def get_key_from_passphrase(passphrase):
     return key_deck
 
 
-def generate_keystream(key, length):
+def generate_keystream(key, length, verbose=False):
     """Implements the Solitaire algorithm.
-    Using given key, generates output keystream (numbers 1-54 inclusive) of given length."""
+    Using given key, generates output keystream (numbers 1-54 inclusive) of given length.
+    Prints verbose output if verbose is set to True."""
     key_helpers.validate_key(key)
     working_deck = key_helpers.format_key(key)
+
+    def verbose_print(to_print):
+        """Prints output if verbose is enabled"""
+        if verbose is True:
+            print(to_print)
+
     keystream = []
     for i in range(length):
         # Iterate through algorithm until we get an output that is not a joker
         while True:
             working_deck = deck_ops.advance_joker_a(working_deck)
+            verbose_print("Deck after advancing joker A:\n{0}".format(working_deck))
             working_deck = deck_ops.advance_joker_b(working_deck)
+            verbose_print("Deck after advancing joker B:\n{0}".format(working_deck))
             working_deck = deck_ops.triple_cut(working_deck)
+            verbose_print("Deck after triple cut:\n{0}".format(working_deck))
             working_deck = deck_ops.count_cut(working_deck)
+            verbose_print("Deck after count cut:\n{0}".format(working_deck))
             try:
-                keystream.append(deck_ops.read_output_keystream_value(working_deck))
+                keystream_val = deck_ops.read_output_keystream_value(working_deck)
+                verbose_print("Found output keystream value {0}".format(keystream_val))
+                keystream.append(keystream_val)
                 break
             except deck_ops.JokerException:
                 continue
