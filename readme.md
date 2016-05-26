@@ -1,6 +1,6 @@
 Implementation of [Solitaire](https://www.schneier.com/cryptography/solitaire/) encryption algorithm by Bruce Schnier, a.k.a. Pontifex cipher from Neal Stephenson's [Cryptonomicon](https://en.wikipedia.org/wiki/Cryptonomicon). Supports generation and human-friendly rendering of keystream, encryption and decryption of messages, and various utility functions.
 
-Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptographer, and this implementation has not been reviewed by one. So, please don't use this project to communicate any truly sensitive information.
+Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptographer, and this implementation has not been reviewed by one. So, please don't use this code to communicate any truly sensitive information.
 
 ## Basic Usage
 
@@ -14,13 +14,20 @@ Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptograph
     >>> k.as_unicode()
     ['🂦', '🃒', '🃏', '🂳', '🂷', '🂴', '🃇', '🃚', '🃅', '🃑', '🂧', '🂡', '🂺', '🂻', '🃆', '🂽', '🂮', '🃝', '🃗', '🂵', '🂪', '🃂', '🃓', '🃎', '🂶', '🂸', '🂢', '🃙', '🃉', '🃊', '🃁', '🃈', '🂱', '🃍', '🂹', '🂾', '🃟', '🂩', '🃔', '🃕', '🃖', '🂭', '🃘', '🃞', '🃋', '🃃', '🃄', '🂨', '🂲', '🃛', '🂣', '🂤', '🂥', '🂫']
     >>> 
-    >>> encrypt(k, 'MANZANITAS')
+    >>> secret_message = encrypt(k, 'MANZANITAS')
+    >>> print(secret_message)
     'JDULDZBAUD'
-    >>> decrypt(k, 'JDULDZBAUD')
+    >>> decrypt(k, secret_message)
     'MANZANITAS'
 
-## Supported Key/Deck Representations
-A key is an ordered deck of cards represented as a list of 54 elements, which can be represented three different ways for computation or human-friendly output. The numeric representation is used internally for cryptographic operations, but we can also accept input or display output as either two-character strings or unicode playing card characters.
+## Key, Deck, and Keystream
+A **key** (or **deck**) is an ordered deck of cards which is represented as a list of 54 elements, each corresponding to a card value. A key/deck can be represented three different ways for human-friendly I/O. The numeric representation is used internally for cryptographic operations, but we can also accept input and display output as either two-character strings or unicode playing card characters. (Internal functions that have a "deck" parameter expect it to be passed in numeric form.)
+
+What's the difference between a key and a deck? Functions that accept a key will never mutate it, while functions accepting a deck may mutate that deck. This is intended to mirror how Solitaire is used by hand; a deck of cards is arranged to represent a static input key, then the deck is manipulated (its state is changed) to generate the keystream.
+
+A **keystream** (as output by `generate_keystream()`) is like a key, but has a variable length that is specified when the function is called. So, a keystream will *not* necessarily contain all 54 card values, and some values may occur more than once.
+
+## Key/Deck Representations
 
 ### Numeric
 As in Schnier's specification, each card is an integer from 1 to 54 inclusive.
@@ -45,16 +52,29 @@ Each card is a unicode playing card character as defined [here](http://www.unico
 
     ['🃑', '🃒', '🃓', '🃔', '🃕', '🃖', '🃗', '🃘', '🃙', '🃚', '🃛', '🃝', '🃞', '🃁', '🃂', '🃃', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃍', '🃎', '🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🂷', '🂸', '🂹', '🂺', '🂻', '🂽', '🂾', '🂡', '🂢', '🂣', '🂤', '🂥', '🂦', '🂧', '🂨', '🂩', '🂪', '🂫', '🂭', '🂮', '🃏', '🃟']
 
-## Other
-"Key" and "deck" refer the same data structure, but have different meanings in different parts of the code.
+## Verbose Mode
 
-Internal functions that have a "deck" parameter expect it to be passed in numeric form.
+`generate_keystream()` supports a verbose mode, to demonstrate each step of the key generation algorithm:
 
-A deck uses the same data structure of a key, but is mutated while performing cryptographic operations in deck_ops.py.
-
-Functions that refer to a "deck" typically mutate the deck.
-Functions that refer to a "key" typically use the key as input but do not modify it.
-
-These 
-
-The encrypt and decrypt functions accept a key adhering to one of the supported representations above, or a Key class instance.
+    >>> k = solitaire.get_key_from_passphrase("RYTIMOCRNUEWOIRCNOIDUFNOIDCFNUOISANCUINDSAJF")
+    >>> k
+    [8, 31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 54, 10, 38, 5, 47, 1, 7, 48, 46, 13, 3, 53, 28, 33, 39, 44, 12, 19, 43, 23, 37, 40]
+    >>> solitaire.generate_keystream(k, 1, verbose=True)
+    Deck after advancing joker A:
+    [8, 31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 54, 10, 38, 5, 47, 1, 7, 48, 46, 13, 3, 28, 53, 33, 39, 44, 12, 19, 43, 23, 37, 40]
+    Deck after advancing joker B:
+    [8, 31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 10, 38, 54, 5, 47, 1, 7, 48, 46, 13, 3, 28, 53, 33, 39, 44, 12, 19, 43, 23, 37, 40]
+    Deck after triple cut:
+    [33, 39, 44, 12, 19, 43, 23, 37, 40, 54, 5, 47, 1, 7, 48, 46, 13, 3, 28, 53, 8, 31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 10, 38]
+    Deck after count cut:
+    [24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 10, 33, 39, 44, 12, 19, 43, 23, 37, 40, 54, 5, 47, 1, 7, 48, 46, 13, 3, 28, 53, 8, 31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 38]
+    Deck after advancing joker A:
+    [24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 10, 33, 39, 44, 12, 19, 43, 23, 37, 40, 54, 5, 47, 1, 7, 48, 46, 13, 3, 28, 8, 53, 31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 38]
+    Deck after advancing joker B:
+    [24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 10, 33, 39, 44, 12, 19, 43, 23, 37, 40, 5, 47, 54, 1, 7, 48, 46, 13, 3, 28, 8, 53, 31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 38]
+    Deck after triple cut:
+    [31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 38, 54, 1, 7, 48, 46, 13, 3, 28, 8, 53, 24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 10, 33, 39, 44, 12, 19, 43, 23, 37, 40, 5, 47]
+    Deck after count cut:
+    [19, 43, 23, 37, 40, 5, 31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 38, 54, 1, 7, 48, 46, 13, 3, 28, 8, 53, 24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 10, 33, 39, 44, 12, 47]
+    Found output keystream value 9
+    [9]
