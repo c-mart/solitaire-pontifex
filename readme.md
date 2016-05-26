@@ -21,13 +21,11 @@ Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptograph
     'MANZANITAS'
 
 ## Key, Deck, and Keystream
-A **key** (or **deck**) is an ordered deck of cards, which is represented as a list of 54 elements, each corresponding to a card value. A key/deck can be represented three different ways for human-friendly I/O. The numeric representation is used internally for cryptographic operations, but we can also accept input and display output as either two-character strings or unicode playing card characters.*
+A **key** (or **deck**) is an ordered deck of cards which is represented as a list of 54 elements, each corresponding to a card value. A key/deck can be represented three different ways for human-friendly I/O. The numeric representation is used internally for cryptographic operations, but we can also accept input and display output as either two-character strings or unicode playing card characters. (Internal functions that have a "deck" parameter expect it to be passed in numeric form.)
 
 What's the difference between a key and a deck? Functions that accept a key will never mutate it, while functions accepting a deck may mutate that deck. This is intended to mirror how Solitaire is used by hand; a deck of cards is arranged to represent a static input key, then the deck is manipulated (its state is changed) to generate the keystream.
 
 A **keystream** (as output by `generate_keystream()`) is like a key, but has a variable length that is specified when the function is called. So, a keystream will *not* necessarily contain all 54 card values, and some values may occur more than once.
-
-* Internal functions that have a "deck" parameter expect it to be passed in numeric form.
 
 ## Key/Deck Representations
 
