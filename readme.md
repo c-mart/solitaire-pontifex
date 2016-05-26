@@ -14,9 +14,10 @@ Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptograph
     >>> k.as_unicode()
     ['🂦', '🃒', '🃏', '🂳', '🂷', '🂴', '🃇', '🃚', '🃅', '🃑', '🂧', '🂡', '🂺', '🂻', '🃆', '🂽', '🂮', '🃝', '🃗', '🂵', '🂪', '🃂', '🃓', '🃎', '🂶', '🂸', '🂢', '🃙', '🃉', '🃊', '🃁', '🃈', '🂱', '🃍', '🂹', '🂾', '🃟', '🂩', '🃔', '🃕', '🃖', '🂭', '🃘', '🃞', '🃋', '🃃', '🃄', '🂨', '🂲', '🃛', '🂣', '🂤', '🂥', '🂫']
     >>> 
-    >>> encrypt(k, 'MANZANITAS')
+    >>> secret_message = encrypt(k, 'MANZANITAS')
+    >>> print(secret_message)
     'JDULDZBAUD'
-    >>> decrypt(k, 'JDULDZBAUD')
+    >>> decrypt(k, secret_message)
     'MANZANITAS'
 
 ## Key, Deck, and Keystream
