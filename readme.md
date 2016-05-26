@@ -78,14 +78,3 @@ Each card is a unicode playing card character as defined [here](http://www.unico
     [19, 43, 23, 37, 40, 5, 31, 6, 2, 34, 30, 20, 35, 11, 14, 15, 50, 18, 41, 9, 51, 16, 27, 38, 54, 1, 7, 48, 46, 13, 3, 28, 8, 53, 24, 49, 52, 22, 4, 21, 25, 26, 42, 29, 45, 17, 36, 32, 10, 33, 39, 44, 12, 47]
     Found output keystream value 9
     [9]
-
-## Other
-
-A deck uses the same data structure of a key, but is mutated while performing cryptographic operations in deck_ops.py.
-
-Functions that refer to a "deck" typically mutate the deck.
-Functions that refer to a "key" typically use the key as input but do not modify it.
-
-These 
-
-The encrypt and decrypt functions accept a key adhering to one of the supported representations above, or a Key class instance.
