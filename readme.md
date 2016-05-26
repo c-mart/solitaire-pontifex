@@ -1,6 +1,6 @@
 Implementation of [Solitaire](https://www.schneier.com/cryptography/solitaire/) encryption algorithm by Bruce Schnier, a.k.a. Pontifex cipher from Neal Stephenson's [Cryptonomicon](https://en.wikipedia.org/wiki/Cryptonomicon). Supports generation and human-friendly rendering of keystream, encryption and decryption of messages, and various utility functions.
 
-Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptographer, and this implementation has not been reviewed by one. So, please don't use this project to communicate any truly sensitive information.
+Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptographer, and this implementation has not been reviewed by one. So, please don't use this code to communicate any truly sensitive information.
 
 ## Basic Usage
 
@@ -19,8 +19,16 @@ Disclaimer: Solitaire has known cryptographic weaknesses. I am not a cryptograph
     >>> decrypt(k, 'JDULDZBAUD')
     'MANZANITAS'
 
-## Supported Key/Deck Representations
-A key is an ordered deck of cards represented as a list of 54 elements, which can be represented three different ways for computation or human-friendly output. The numeric representation is used internally for cryptographic operations, but we can also accept input or display output as either two-character strings or unicode playing card characters.
+## Key, Deck, and Keystream
+A **key** (or **deck**) is an ordered deck of cards, which is represented as a list of 54 elements, each corresponding to a card value. A key/deck can be represented three different ways for human-friendly I/O. The numeric representation is used internally for cryptographic operations, but we can also accept input and display output as either two-character strings or unicode playing card characters.*
+
+What's the difference between a key and a deck? Functions that accept a key will never mutate it, while functions accepting a deck may mutate that deck. This is intended to mirror how Solitaire is used by hand; a deck of cards is arranged to represent a static input key, then the deck is manipulated (its state is changed) to generate the keystream.
+
+A **keystream** (as output by `generate_keystream()`) is like a key, but has a variable length that is specified when the function is called. So, a keystream will *not* necessarily contain all 54 card values, and some values may occur more than once.
+
+* Internal functions that have a "deck" parameter expect it to be passed in numeric form.
+
+## Key/Deck Representations
 
 ### Numeric
 As in Schnier's specification, each card is an integer from 1 to 54 inclusive.
@@ -46,9 +54,6 @@ Each card is a unicode playing card character as defined [here](http://www.unico
     ['🃑', '🃒', '🃓', '🃔', '🃕', '🃖', '🃗', '🃘', '🃙', '🃚', '🃛', '🃝', '🃞', '🃁', '🃂', '🃃', '🃄', '🃅', '🃆', '🃇', '🃈', '🃉', '🃊', '🃋', '🃍', '🃎', '🂱', '🂲', '🂳', '🂴', '🂵', '🂶', '🂷', '🂸', '🂹', '🂺', '🂻', '🂽', '🂾', '🂡', '🂢', '🂣', '🂤', '🂥', '🂦', '🂧', '🂨', '🂩', '🂪', '🂫', '🂭', '🂮', '🃏', '🃟']
 
 ## Other
-"Key" and "deck" refer the same data structure, but have different meanings in different parts of the code.
-
-Internal functions that have a "deck" parameter expect it to be passed in numeric form.
 
 A deck uses the same data structure of a key, but is mutated while performing cryptographic operations in deck_ops.py.
 

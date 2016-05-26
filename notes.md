@@ -3,6 +3,7 @@ From https://www.schneier.com/cryptography/solitaire/
 We can accept key in numeric, string, or unicode playing card format
 
 ## Todo
+- http://www.ciphergoth.org/crypto/solitaire/
 - Test key class
 - Verbose mode output
 - Ensure we are validating everything. Every function checks valid input? Or make functions not public?
